@@ -1,7 +1,42 @@
 <template>
     <div class="main-block">
+        <Drawer
+            title="MapView"
+            v-model="isShowMap"
+            width="640"
+            :styles="styles"
+        >
+            <MapView/>
+        </Drawer>
+        <Drawer
+            title="BagView"
+            v-model="isShowBag"
+            width="640"
+            :styles="styles"
+        >
+            <BagView/>
+        </Drawer>
         <div class="header-info fl">
-            金钱: {{playerInfo.money}}
+            <div class="fl">
+                <Breadcrumb>
+                    <BreadcrumbItem to="/">
+                        <Icon type="ios-home-outline"></Icon> 首页
+                    </BreadcrumbItem>
+                    <BreadcrumbItem to="/components/breadcrumb">
+                        <Icon type="logo-buffer"></Icon> 组件
+                    </BreadcrumbItem>
+                    <BreadcrumbItem>
+                        <Icon type="ios-cafe"></Icon> 面包屑
+                    </BreadcrumbItem>
+                </Breadcrumb>
+            </div>
+            <div class="fr">金钱: {{playerInfo.money}}</div>
+        </div>
+        <div class="header-action fl">
+            <ButtonGroup>
+                <Button class="action-btn" @click="handleMap">地图</Button>
+                <Button class="action-btn" @click="handleBag">背包</Button>
+            </ButtonGroup >
         </div>
         <div class="battle-area fl">
             <div class="battle-block fl">
@@ -56,6 +91,9 @@
                 </div> -->
             </Scroll>
         </div>
+        <!-- <div class="fl">
+            <GlobalFooter :links="links" :copyright="copyright" />
+        </div> -->
     </div>
 </template>
 
@@ -64,14 +102,15 @@
 import {ref, getCurrentInstance, nextTick} from "vue"
 import PlayerInfo from "@/libs/battle/PlayerInfo"
 import MonsterInfo from "@/libs/battle/MonsterInfo"
-
-const wrongText = ref("wrong")
+import MapInfo from "@/libs/map/MapInfo"
+import MapView from "../components/MapView.vue"
+import BagView from "../components/BagView.vue"
 
 let playerInfo = ref(new PlayerInfo())
 // playerInfo.value.cleanData()
 playerInfo.value.loadData()
-
 let monsterInfo = ref(new MonsterInfo())
+let mapInfo = ref(new MapInfo())
 
 let isBattle = false
 let lastBattleTimestamp = 0
@@ -80,6 +119,16 @@ let battleInfos = ref([])
 // let battleResult = ref([])
 
 const {proxy}  = getCurrentInstance()
+
+const isShowMap = ref(false)
+const isShowBag = ref(false)
+
+const styles = {
+    height: 'calc(100% - 55px)',
+    overflow: 'auto',
+    paddingBottom: '53px',
+    position: 'static'
+}
 
 setInterval(function() {
     nextBattleTick()
@@ -143,17 +192,57 @@ function nextBattleTick() {
         }, 400)
     }
 }
+
+function handleMap () {
+    isShowMap.value = true
+}
+
+function handleBag () {
+    isShowBag.value = true
+}
+
+const links = [
+    {
+    key: '帮助',
+    title: '帮助',
+    href: 'https://www.iviewui.com',
+    blankTarget: true
+    },
+    {
+    key: 'github',
+    icon: 'logo-github',
+    href: 'https://github.com/view-design/ViewUIPlus',
+    blankTarget: true
+    },
+    {
+    key: '条款',
+    title: '条款',
+    href: '',
+    blankTarget: true
+    }
+]
+const copyright = 'Copyright © 2022 View Design All Rights Reserved'
+
 </script>
 
 <style scoped>
     .main-block {
-        width: 1200px;
+        border: 1px solid #CCCCCC;
+        width: 1024px;
     }
     .header-info {
         border: 1px solid #CCCCCC;
-        width: 1010px;
-        height: 50px;
+        width: 1022px;
+        height: 40px;
         padding: 10px;
+    }
+    .header-action {
+        width: 1024px;
+        margin-top: 10px;
+        margin-left: 10px;
+    }
+    .action-btn {
+        margin-right: 10px;
     }
     .battle-area {
         border: 1px solid #CCCCCC;

@@ -8,7 +8,7 @@ export default class PlayerInfo extends BattleEntityInfo {
     }
 
     public cleanData() {
-        localStorage.setItem('playerData', "")
+        localStorage.setItem('playerData', '')
     }
 
     public loadData() {
@@ -21,6 +21,7 @@ export default class PlayerInfo extends BattleEntityInfo {
             this.mp = 100
             this.maxMp = 100
             this.atk = 30
+            this.money = 0
         } else {
             const playerInfoData = JSON.parse(playerData)
             this.level = playerInfoData.level
@@ -30,6 +31,7 @@ export default class PlayerInfo extends BattleEntityInfo {
             this.mp = playerInfoData.mp
             this.maxMp = playerInfoData.maxMp
             this.atk = playerInfoData.atk
+            this.money = playerInfoData.money
         }
     }
 
@@ -41,7 +43,8 @@ export default class PlayerInfo extends BattleEntityInfo {
             maxHp:  this.maxHp,
             mp: this.mp,
             maxMp:  this.maxMp,
-            atk: this.atk
+            atk: this.atk,
+            money: this.money
         })
         localStorage.setItem('playerData', playerInfoData)
     }
