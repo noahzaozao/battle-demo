@@ -1,6 +1,6 @@
 <template>
     <div class="main-block">
-        <Drawer
+        <!-- <Drawer
             title="MapView"
             v-model="isShowMap"
             width="640"
@@ -15,62 +15,68 @@
             :styles="styles"
         >
             <BagView/>
-        </Drawer>
+        </Drawer> -->
         <div class="header-info fl">
-            <div class="fl">
-                <Breadcrumb>
-                    <BreadcrumbItem to="/">
-                        <Icon type="ios-home-outline"></Icon> 首页
-                    </BreadcrumbItem>
-                    <BreadcrumbItem to="/components/breadcrumb">
-                        <Icon type="logo-buffer"></Icon> 组件
-                    </BreadcrumbItem>
-                    <BreadcrumbItem>
-                        <Icon type="ios-cafe"></Icon> 面包屑
-                    </BreadcrumbItem>
-                </Breadcrumb>
-            </div>
-            <div class="fr">金钱: {{playerInfo.money}}</div>
-        </div>
-        <div class="header-action fl">
-            <ButtonGroup>
-                <Button class="action-btn" @click="handleMap">地图</Button>
-                <Button class="action-btn" @click="handleBag">背包</Button>
-            </ButtonGroup >
+            <div class="fl">金钱 {{playerInfo.money}}</div>
         </div>
         <div class="battle-area fl">
             <div class="battle-block fl">
-                <Avatar shape="square" icon="ios-person" size="large" />
-                <Progress :percent="(playerInfo.hp / playerInfo.maxHp) * 100" :stroke-width="5" :stroke-color="['#FF0000', '#FF0000']" hide-info />
-                <Progress :percent="(playerInfo.mp / playerInfo.maxMp) * 100" :stroke-width="5" :stroke-color="['#0000FF', '#0000FF']" hide-info />
+                <Avatar class="fl" shape="square" icon="ios-person" />
+                <Progress class="progress fr" :percent="(playerInfo.hp / playerInfo.maxHp) * 100" :stroke-width="5" :stroke-color="['#FF0000', '#FF0000']" hide-info />
+                <Progress class="progress fr" :percent="(playerInfo.mp / playerInfo.maxMp) * 100" :stroke-width="5" :stroke-color="['#0000FF', '#0000FF']" hide-info />
+                <div class="battle-block-info fl">Lv. {{playerInfo.level}} (Exp. {{playerInfo.exp}}/{{playerInfo.getNextExp()}})</div>
+                <div class="battle-block-info fl">Atk. {{playerInfo.atk}}</div>
             </div>
             <div class="battle-block fr">
                 <ul class="battle-status">
-                    <li>等级: {{playerInfo.level}} 经验值: {{playerInfo.exp}}/{{playerInfo.getNextExp()}}</li>
-                    <li>生命: {{playerInfo.hp}}/{{playerInfo.maxHp}}</li>
-                    <li>魔力: {{playerInfo.mp}}/{{playerInfo.maxMp}}</li>
-                    <li>攻击力: {{playerInfo.atk}}</li>
+                    <li>HP. {{playerInfo.hp}}/{{playerInfo.maxHp}}</li>
+                    <li>MP: {{playerInfo.mp}}/{{playerInfo.maxMp}}</li>
                 </ul>
             </div>
         </div>
         <div class="battle-area fl">
             <div class="battle-block fl">
-                <ul class="battle-status">
-                    <li>等级: {{monsterInfo.level}}</li>
-                    <li>生命: {{monsterInfo.hp}}/{{monsterInfo.maxHp}}</li>
-                    <li>魔力: {{monsterInfo.mp}}/{{monsterInfo.maxMp}}</li>
-                    <li>攻击力: {{monsterInfo.atk}}</li>
-                </ul>
+                <Avatar class="fl" shape="square" icon="ios-person" />
+                <Progress class="progress fr" :percent="(monsterInfo.hp / monsterInfo.maxHp) * 100" :stroke-width="5" :stroke-color="['#FF0000', '#FF0000']" hide-info />
+                <Progress class="progress fr" :percent="(monsterInfo.mp / monsterInfo.maxMp) * 100" :stroke-width="5" :stroke-color="['#0000FF', '#0000FF']" hide-info />
+                <div class="battle-block-info fl">Lv. {{monsterInfo.level}}</div>
+                <div class="battle-block-info fl">Atk. {{monsterInfo.atk}}</div>
             </div>
             <div class="battle-block fr">
-                <Avatar shape="square" icon="ios-person" size="large" />
-                <Progress :percent="(monsterInfo.hp / monsterInfo.maxHp) * 100" :stroke-width="5" :stroke-color="['#FF0000', '#FF0000']" hide-info />
-                <Progress :percent="(monsterInfo.mp / monsterInfo.maxMp) * 100" :stroke-width="5" :stroke-color="['#0000FF', '#0000FF']" hide-info />
+                <ul class="battle-status">
+                    <li>HP. {{monsterInfo.hp}}/{{monsterInfo.maxHp}}</li>
+                    <li>MP. {{monsterInfo.mp}}/{{monsterInfo.maxMp}}</li>
+                </ul>
             </div>
         </div>
-        <div class="battle-info fl">
-            <Scroll ref="container">
-                <Timeline>
+        <div class="map-path fl">
+            <Breadcrumb>
+                <BreadcrumbItem to="/">
+                    <Icon type="logo-buffer"></Icon> 世界
+                </BreadcrumbItem>
+                <BreadcrumbItem to="/">
+                    <Icon type="logo-buffer"></Icon> 新手区域
+                </BreadcrumbItem>
+                <BreadcrumbItem>
+                    <Icon type="ios-cafe"></Icon> 新手村
+                </BreadcrumbItem>
+            </Breadcrumb>
+        </div>
+        <div class="side-bar fl">
+            <Button class="action-btn" @click="handleMap">地图</Button>
+            <Button class="action-btn" @click="handleChar">角色</Button>
+        </div>
+        <div class="map-area fl">
+            <div v-if="isShowMap">
+                <MapView/>
+            </div>
+            <div v-if="isShowChar">
+                <CharacterView/>
+            </div>
+        </div>
+        <div class="battle-info fr">
+            <Scroll ref="container" height="410">
+                <Timeline class="battle-info-timeline">
                     <template v-for="(item, index) in battleInfos" :key="index">
                         <TimelineItem class="battle-info-item" color="red">
                             <div>
@@ -104,7 +110,7 @@ import PlayerInfo from "@/libs/battle/PlayerInfo"
 import MonsterInfo from "@/libs/battle/MonsterInfo"
 import MapInfo from "@/libs/map/MapInfo"
 import MapView from "../components/MapView.vue"
-import BagView from "../components/BagView.vue"
+import CharacterView from "../components/CharacterView.vue"
 
 let playerInfo = ref(new PlayerInfo())
 // playerInfo.value.cleanData()
@@ -120,8 +126,8 @@ let battleInfos = ref([])
 
 const {proxy}  = getCurrentInstance()
 
-const isShowMap = ref(false)
-const isShowBag = ref(false)
+const isShowMap = ref(true)
+const isShowChar = ref(false)
 
 const styles = {
     height: 'calc(100% - 55px)',
@@ -163,7 +169,7 @@ function battleTick() {
     }
 
     nextTick(() => {
-        proxy.$el.querySelector(".ivu-scroll-content").scrollIntoView({
+        proxy.$el.querySelector(".battle-info-timeline").scrollIntoView({
             behavior: "smooth",
             block: "end",
             inline: "nearest",
@@ -193,12 +199,19 @@ function nextBattleTick() {
     }
 }
 
+function hideAll() {
+    isShowMap.value = false
+    isShowChar.value = false
+}
+
 function handleMap () {
+    hideAll()
     isShowMap.value = true
 }
 
-function handleBag () {
-    isShowBag.value = true
+function handleChar() {
+    hideAll()
+    isShowChar.value = true
 }
 
 const links = [
@@ -229,20 +242,12 @@ const copyright = 'Copyright © 2022 View Design All Rights Reserved'
     .main-block {
         border: 1px solid #CCCCCC;
         width: 1024px;
+        height: 640px;
     }
     .header-info {
-        border: 1px solid #CCCCCC;
-        width: 1022px;
-        height: 40px;
-        padding: 10px;
-    }
-    .header-action {
         width: 1024px;
-        margin-top: 10px;
-        margin-left: 10px;
-    }
-    .action-btn {
-        margin-right: 10px;
+        height: 30px;
+        padding: 10px;
     }
     .battle-area {
         border: 1px solid #CCCCCC;
@@ -253,12 +258,15 @@ const copyright = 'Copyright © 2022 View Design All Rights Reserved'
         padding: 10px;
     }
     .battle-block {
-        border: 1px solid #CCCCCC;
-        width: 230px;
-        height: 100px;
-        padding: 10px;
+        width: 200px;
     }
-
+    .battle-block .progress {
+        width: 150px;
+        height: 12px;
+    }
+    .battle-block-info {
+        width: 200px;
+    }
     .battle-block .battle-status {
         list-style: none;
     }
@@ -268,14 +276,38 @@ const copyright = 'Copyright © 2022 View Design All Rights Reserved'
     .fr {
         float: right;
     }
+    .map-path {
+        width: 1000px;
+        padding: 10px;
+    }
+    .side-bar {
+        width: 70px;
+    }
+    .map-area {
+        border: 1px solid #CCCCCC;
+        width: 550px;
+        height: 420px;
+    }
     .battle-info {
         border: 1px solid #CCCCCC;
-        width: 1010px;
-        height: 350px;
-        margin-top: 10px;
-        padding: 10px;
+        width: 400px;
+        height: 420px;
+        padding-left: 5px;
     }
     .battle-info-item {
         padding: 0 0 1px 0;
+    }
+    .footer-info {
+        border: 1px solid #CCCCCC;
+        width: 1022px;
+        height: 40px;
+        padding: 10px;
+    }
+    .footer-action {
+        width: 490px;
+        margin: 10px;
+    }
+    .action-btn {
+        margin: 5px;
     }
 </style>
